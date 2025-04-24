@@ -16,8 +16,6 @@ This project provides personalized diet and workout recommendations based on use
 - **Git**: For version control and collaboration.
 - **Render**: For deploying the web application.
 
-## Setup
-
 ### Prerequisites
 
 - Python 3.x
