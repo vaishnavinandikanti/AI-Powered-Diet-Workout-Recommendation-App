@@ -23,7 +23,8 @@ This project provides personalized diet and workout recommendations based on use
 
 ### Installation
 
+
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/vaishnavinandikanti/Diet-and-Workout-Recommender.git
+   git clone https://github.com/vaishnavinandikanti/Diet-and-Workout-Recommending-System.git
