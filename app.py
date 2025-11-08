@@ -1,6 +1,10 @@
 import streamlit as st
+import os
 from groq import Groq
-import re
+from dotenv import load_dotenv
+
+# Load environment variables (for local .env support)
+load_dotenv()
 
 # Page setup
 st.set_page_config(page_title="AI Fitness & Diet Coach 🥗", page_icon="💪", layout="wide")
