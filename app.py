@@ -331,4 +331,4 @@ Use bullet points or numbered lists under each header.
         st.error("No recommendations could be parsed from the model output. Please check the Raw model output (expand above) and consider editing the prompt to request a clearer headered response.")
 
 st.markdown("---")
-st.caption("Built with ❤️ — keep your API key secure (use .env locally or Streamlit Secrets).")
+st.caption("Built with ❤️ using Streamlit and Groq LLaMA 3.")
