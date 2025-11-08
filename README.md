@@ -1,85 +1,134 @@
-# 🥗 AI-Powered Diet & Workout Recommendation Web App
+# AI-Powered Diet & Workout Recommendation App
 
-This is a Flask-based web application that generates personalized **diet, workout, and restaurant recommendations** based on user input. It uses the **Groq API with LLaMA 3 model** to generate intelligent and relevant suggestions tailored to users’ lifestyle and health data.
+An intelligent Streamlit web app that generates personalized meal plans, restaurant suggestions, and workout routines using the Groq API (Llama 3 models).
 
----
-
-## 🚀 Features
-
-- 🧝‍♂️ Personalized suggestions based on:
-  - Age, gender, weight, height
-  - Diet preferences & food types
-  - Health conditions, allergies, and region
-- 🥣 Recommendations include:
-  - Breakfast & Dinner meals
-  - Nearby restaurants
-  - Custom workout plans
-- ⚡ Powered by **Groq API (LLaMA 3)** for high-performance AI generation
-- 💡 Clean and responsive UI using **Bootstrap 4**
+This application combines AI reasoning with user data (age, weight, goals, diet type, and location) to create practical, localized fitness and nutrition recommendations.
 
 ---
 
-## 🛠️ Tech Stack
+## Features
 
-- **Backend:** Python, Flask
-- **Frontend:** HTML, Bootstrap
-- **AI Model:** Groq API with LLaMA 3
-- **Templating Engine:** Jinja2
+- Personalized recommendations based on:
+  - Age, gender, height, and weight
+  - Dietary preferences (Vegetarian / Non-Vegetarian / Vegan)
+  - Allergies and medical conditions
+  - Fitness goals (e.g., lean muscle, fat loss, maintenance)
+  - Location (city and area for local restaurants)
+
+- Interactive user interface:
+  - Example prompts for quick start
+  - Manual text prompt support
+  - Raw model output expander for debugging
+  - Clean Streamlit layout with form-based input
+
+- Secure API key management:
+  - `.env` for local development
+  - Streamlit Secrets for production deployments
 
 ---
 
-## 📁 Project Structure
+## File Structure
+AI-Powered-Diet-Workout-Recommendation-App/
+│
+├── app.py                  # Main Streamlit application
+├── requirements.txt        # Project dependencies
+├── .gitignore              # Ignores .env and temporary files
+├── .env (local only)       # Stores GROQ_API_KEY (not pushed)
+└── README.md               # Documentation
 
+---
+
+## Local Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/<your-username>/AI-Powered-Diet-Workout-Recommendation-App.git
+cd AI-Powered-Diet-Workout-Recommendation-App
 ```
-├── app.py                  # Main Flask application
-├── requirements.txt        # Python dependencies
-└── templates/
-    ├── index.html          # Form for user input
-    └── result.html         # Displays AI-generated recommendations
-```
+
+### 2. Install dependencies
+pip install -r requirements.txt
+
+### 3. Add your Groq API key
+Create a .env file in the root folder and add:
+GROQ_API_KEY=gsk_your_api_key_here
+Note: .env is already listed in .gitignore, so it will not be pushed to GitHub.
+
+### 4. Run the Streamlit app
+streamlit run app.py
+
+The app will start locally at:
+http://localhost:8501
+---
+Deployment on Streamlit Cloud
+1. Push your latest code to GitHub.
+
+2. Go to https://share.streamlit.io and create a new app.
+
+3. Choose your repository and set the main file to app.py.
+
+4. Add your Groq API key in Settings → Secrets:
+
+GROQ_API_KEY = "gsk_your_api_key_here"
+Click Deploy.
+
+5. After deployment, your app will be available at:
+
+https://<your-username>-ai-powered-diet-workout-recommendation-app.streamlit.app
+---
+Example Prompts
+Try entering:
+
+- I want to build lean muscle with a high-protein diet.
+
+- I want to lose fat and tone up with vegetarian meals.
+
+- I want low-carb meals and short daily workouts.
+
+- I want diabetic-friendly Indian meal options.
+
+- I want a high-protein bulking plan with nearby restaurants.
+  
+---
+
+Requirements
+
+streamlit==1.39.0
+groq==0.22.0
+python-dotenv==1.0.1
+requests==2.32.3
 
 ---
 
-## ⚙️ Installation & Running Locally
+Future Enhancements
+- Add calorie and macronutrient analysis
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
-   ```
+- Integrate Google Maps API for real restaurant locations
 
-2. **Create a virtual environment (optional but recommended):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
+- Include a downloadable PDF plan
 
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set your Groq API key:**
-   ```bash
-   export GROQ_API_KEY="your_api_key_here"  # On Windows use `set`
-   ```
-
-5. **Run the Flask server:**
-   ```bash
-   python app.py
-   ```
-
-6. **Open in browser:**
-   Visit `http://127.0.0.1:5000` in your browser
+- Improve mobile responsiveness
 
 ---
+Tech Stack
+- Python
 
-## 📌 Example Prompt Sent to LLaMA 3
+- Streamlit
 
-> Suggest 6 restaurant names, 6 breakfast names, 5 dinner names, and 6 workout names based on:  
-> Age: 25, Gender: Male, Weight: 70, Height: 1.75, Dietary Preferences: Vegan, Disease: None, Region: Asia, Allergies: Nuts, Food Type: Low Carb
+- Groq API (Llama 3 models)
 
+- dotenv
+
+- Requests
 ---
+Author
+Vaishnavi Nandikanti
+GitHub: https://github.com/vaishnavinandikanti
+
+
+
+
+
 
 
 
