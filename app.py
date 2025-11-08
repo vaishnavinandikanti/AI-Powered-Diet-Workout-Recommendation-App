@@ -1,131 +1,175 @@
+# ============================================================
+# AI-Powered Diet and Workout Recommendation App
+# Clean, Secure Streamlit Version
+# ============================================================
+
 import streamlit as st
+import os
+from dotenv import load_dotenv
 from groq import Groq
 import re
 
-# Page setup
-st.set_page_config(page_title="AI Fitness & Diet Coach 🥗", page_icon="💪", layout="wide")
+# ============================================================
+# 🔐 Load Environment Variables
+# ============================================================
+# This works both locally (using .env) and on Streamlit Cloud (Secrets)
+load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
 
-st.title("🥗 AI Fitness & Diet Coach")
-st.markdown("### Your personalized health assistant powered by Groq LLaMA 3")
+# Handle missing key clearly
+if not api_key:
+    st.error("⚠️ Missing GROQ_API_KEY — please set it in Streamlit Secrets or a local .env file.")
+    st.stop()
 
-st.write("👋 Tell me your fitness goal — or pick one of the example goals below to get started!")
+# Initialize Groq client
+try:
+    client = Groq(api_key=api_key)
+except Exception as e:
+    st.error(f"Error initializing Groq client: {e}")
+    st.stop()
 
-# Example fitness goal prompts
-example_goals = [
-    "I want to gain lean muscle.",
-    "I want to lose fat and tone my body.",
-    "I want to maintain a balanced and healthy lifestyle.",
-    "I want to improve my stamina and strength.",
-    "I want to manage stress and eat healthier meals.",
+# ============================================================
+# 🎨 Streamlit App Configuration
+# ============================================================
+st.set_page_config(page_title="AI Diet & Workout Recommender", page_icon="💪", layout="centered")
+
+st.title("💪 AI-Powered Diet and Workout Recommendation App")
+st.write("Get personalized restaurant, meal, and workout recommendations based on your fitness goals.")
+
+st.divider()
+
+# ============================================================
+# 🧠 Example Prompts Section
+# ============================================================
+st.subheader("📝 Example Prompts")
+
+example_prompts = [
+    "I want to build lean muscle with a high-protein diet.",
+    "I want to lose fat with an Indian vegetarian meal plan.",
+    "I want to gain healthy weight with a balanced diet.",
+    "I want to maintain my fitness with light workouts.",
+    "I have diabetes and want a low-sugar meal plan."
 ]
 
-# Sidebar for structured inputs
-with st.sidebar:
-    st.header("🧾 Your Information")
-    age = st.number_input("Age", min_value=10, max_value=100, value=25)
-    gender = st.selectbox("Gender", ["Male", "Female"])
-    height = st.number_input("Height (m)", min_value=1.0, max_value=2.5, step=0.01, value=1.70)
-    weight = st.number_input("Weight (kg)", min_value=30.0, max_value=200.0, step=0.1, value=70.0)
-    diet = st.selectbox("Dietary Preference", ["Vegetarian", "Non-Vegetarian", "Vegan"])
-    city = st.selectbox(
-        "City", [
-            "Hyderabad", "Bengaluru", "Chennai", "Delhi",
-            "Mumbai", "Pune", "Kolkata", "Ahmedabad"
-        ]
-    )
-    area = st.text_input("Enter your locality or area (e.g., Miyapur, Indiranagar, T. Nagar)")
+st.write("Here are some example prompts you can use 👇")
+for prompt in example_prompts:
+    st.markdown(f"- {prompt}")
 
-# Main goal selection section
-st.subheader("🎯 Choose Your Goal")
-selected_goal = st.radio("Select from examples:", example_goals, index=None)
-custom_goal = st.text_area("Or write your own goal:", placeholder="e.g., I want a high-protein vegetarian diet with home workouts.")
+st.divider()
 
-final_goal = selected_goal if selected_goal else custom_goal
+# ============================================================
+# 🧍 User Input Section
+# ============================================================
+st.subheader("⚙️ Customize Your Plan")
 
-if st.button("Generate My Personalized Plan 🚀"):
-    if not final_goal:
-        st.warning("Please select or enter a goal first!")
+goal = st.text_area("💭 Describe your fitness goal:", placeholder="E.g., I want to get lean and improve stamina.")
+city = st.text_input("📍 Enter your city:", placeholder="E.g., Hyderabad")
+area = st.text_input("🏠 Enter your area/locality:", placeholder="E.g., Himayat Nagar")
+
+age = st.number_input("🎂 Age", min_value=10, max_value=100, value=25)
+gender = st.selectbox("🚻 Gender", ["Male", "Female", "Other"])
+weight = st.number_input("⚖️ Weight (in kg)", min_value=30.0, max_value=200.0, value=65.0)
+height = st.number_input("📏 Height (in meters)", min_value=1.2, max_value=2.2, value=1.7)
+diet_pref = st.selectbox("🥗 Dietary Preference", ["Vegetarian", "Non-Vegetarian", "Vegan"])
+disease = st.text_input("🩺 Any health conditions (optional)", placeholder="E.g., PCOS, Diabetes, None")
+allergies = st.text_input("🚫 Any food allergies (optional)", placeholder="E.g., Peanuts, Gluten, None")
+
+st.divider()
+
+# ============================================================
+# ⚡ Generate Recommendations
+# ============================================================
+if st.button("🚀 Generate My Personalized Plan"):
+    if not goal or not city or not area:
+        st.warning("Please fill in your goal, city, and area before generating recommendations.")
+        st.stop()
+
+    st.info("⏳ Generating your personalized recommendations... please wait.")
+
+    # BMI calculation (for personalized context)
+    bmi = weight / (height ** 2)
+    if bmi < 18.5:
+        bmi_status = "underweight"
+    elif bmi < 24.9:
+        bmi_status = "normal"
+    elif bmi < 29.9:
+        bmi_status = "overweight"
     else:
-        st.info("Generating your personalized recommendations... please wait ⏳")
+        bmi_status = "obese"
 
-        # Calculate BMI
-        bmi = weight / (height ** 2)
-        if bmi < 18.5:
-            bmi_status = "underweight"
-        elif bmi < 24.9:
-            bmi_status = "normal"
-        elif bmi < 29.9:
-            bmi_status = "overweight"
-        else:
-            bmi_status = "obese"
+    # Prepare prompt
+    prompt = f"""
+    Based on the following details:
+    - Goal: {goal}
+    - Age: {age}
+    - Gender: {gender}
+    - Weight: {weight} kg
+    - Height: {height} m
+    - BMI Status: {bmi_status}
+    - Dietary Preference: {diet_pref}
+    - Health Conditions: {disease}
+    - Allergies: {allergies}
+    - Location: {city}, {area}
 
-        # Prepare the Groq client
-        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        # Construct the AI prompt
-        prompt = f"""
-        You are a certified nutritionist and fitness coach. Based on the following information, generate:
-        - 5 healthy restaurant recommendations within 5 km radius of the user's area (assume India).
-        - 6 personalized breakfast ideas.
-        - 5 personalized dinner ideas.
-        - 6 workouts based on the user's goal, BMI, and health condition.
+    Suggest:
+    1. 6 restaurant names (within 5 km of {area}, {city})
+    2. 6 breakfast ideas suitable for the user's goal
+    3. 5 dinner meal ideas
+    4. 6 workouts suitable for the user's body type and goal
 
-        User Goal: {final_goal}
-        Age: {age}, Gender: {gender}, Height: {height}m, Weight: {weight}kg, BMI: {bmi:.1f} ({bmi_status})
-        Dietary Preference: {diet}
-        Region: {city} — {area}
+    Use these headers in your response:
+    Restaurants:
+    Breakfast:
+    Dinner:
+    Workouts:
+    """
 
-        Format the response as:
-        Restaurants:
-        Breakfast:
-        Dinner:
-        Workouts:
-        """
+    # Call Groq API
+    try:
+        response = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.6,
+            max_tokens=1024
+        )
 
-        try:
-            response = client.chat.completions.create(
-                model="llama3-70b-8192",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.6,
-                max_tokens=1000
-            )
+        result_text = response.choices[0].message.content
 
-            text = response.choices[0].message.content
+        # Extract content by section
+        def extract_section(header1, header2, text):
+            pattern = rf"{header1}:(.*?){header2}:"
+            section = re.search(pattern, text, re.DOTALL)
+            return section.group(1).strip() if section else ""
 
-            # Helper function to extract sections
-            def extract(section):
-                pattern = rf"{section}:(.*?)(?=\n[A-Z]|$)"
-                match = re.search(pattern, text, re.DOTALL)
-                return [i.strip('- ').strip() for i in match.group(1).split('\n') if i.strip()] if match else []
+        def clean_list(section):
+            return [item.strip("-• ").strip() for item in section.split("\n") if item.strip()]
 
-            restaurants = extract("Restaurants")
-            breakfasts = extract("Breakfast")
-            dinners = extract("Dinner")
-            workouts = extract("Workouts")
+        restaurants = clean_list(extract_section("Restaurants", "Breakfast", result_text))
+        breakfast = clean_list(extract_section("Breakfast", "Dinner", result_text))
+        dinner = clean_list(extract_section("Dinner", "Workouts", result_text))
+        workouts = clean_list(result_text.split("Workouts:")[-1])
 
-            st.success("✅ Personalized plan generated!")
+        # Display results
+        st.success("✅ Recommendations Generated Successfully!")
 
-            if restaurants:
-                st.subheader("🍽️ Recommended Restaurants (within 5 km)")
-                for r in restaurants:
-                    st.write(f"- {r}")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("🍽️ Restaurants")
+            st.write("\n".join([f"- {r}" for r in restaurants]))
 
-            if breakfasts:
-                st.subheader("🥣 Breakfast Suggestions")
-                for b in breakfasts:
-                    st.write(f"- {b}")
+            st.subheader("🌅 Breakfast Ideas")
+            st.write("\n".join([f"- {b}" for b in breakfast]))
 
-            if dinners:
-                st.subheader("🌙 Dinner Suggestions")
-                for d in dinners:
-                    st.write(f"- {d}")
+        with col2:
+            st.subheader("🌙 Dinner Ideas")
+            st.write("\n".join([f"- {d}" for d in dinner]))
 
-            if workouts:
-                st.subheader("🏋️ Workout Plan")
-                for w in workouts:
-                    st.write(f"- {w}")
+            st.subheader("🏋️ Workouts")
+            st.write("\n".join([f"- {w}" for w in workouts]))
 
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+    except Exception as e:
+        st.error(f"❌ Error generating recommendations: {e}")
 
-st.markdown("---")
-st.caption("Built with ❤️ using Streamlit and Groq LLaMA 3.")
+# ============================================================
+# End of App
+# ============================================================
