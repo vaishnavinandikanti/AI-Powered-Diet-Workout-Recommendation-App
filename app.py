@@ -60,7 +60,7 @@ if st.button("Generate My Personalized Plan 🚀"):
             bmi_status = "obese"
 
         # Prepare the Groq client
-        client = Groq(api_key="YOUR_GROQ_API_KEY")  # Replace with env var for security
+        client = Groq(api_key="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")  
 
         # Construct the AI prompt
         prompt = f"""
