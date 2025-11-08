@@ -60,8 +60,7 @@ if st.button("Generate My Personalized Plan 🚀"):
             bmi_status = "obese"
 
         # Prepare the Groq client
-        client = Groq(api_key="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")  
-
+        client = GROQ_API_KEY = os.getenv("GROQ_API_KEY"))
         # Construct the AI prompt
         prompt = f"""
         You are a certified nutritionist and fitness coach. Based on the following information, generate:
