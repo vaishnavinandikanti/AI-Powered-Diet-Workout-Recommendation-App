@@ -87,10 +87,11 @@ if st.button("Generate My Personalized Plan 🚀"):
 
         try:
             response = client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.1-70b-versatile",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.6,
-                max_tokens=1000
+                max_tokens=1024
+
             )
 
             text = response.choices[0].message.content
