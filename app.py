@@ -127,7 +127,7 @@ if st.button("🚀 Generate My Personalized Plan"):
     # Call Groq API
     try:
         response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.1-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
             max_tokens=1024
